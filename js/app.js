@@ -1,7 +1,10 @@
 /*
  * Create a list that holds all of your cards
  */
-
+ //TS: in this i'm calling the deck class and trying to shuffle its contents. But I don't know how to turn the card elements into an array.
+const decklist = document.getElementsByClassName('deck').onsubmit => shuffle();
+//TS:calling the card class so I have it in this JS doc.
+const card = document.getElementsByClassName('card');
 
 /*
  * Display the cards on the page
@@ -9,6 +12,14 @@
  *   - loop through each card and create its HTML
  *   - add each card's HTML to the page
  */
+//TS:shuffle the list of cards ¯\_(ツ)_/¯
+function displayCards() {
+  for (let i = 0; i < decklist.length; i++) {
+    decklist.appendChild(card)
+    card.style.shuffle('fa');
+  }
+};
+
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -36,3 +47,12 @@ function shuffle(array) {
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
+decklist.card.onclick => {
+  displaySymbol(this);
+};
+
+const displaySymbol = card => {
+  const symbol = card.classList.add('fa-');
+}
+
+//TS: I'm not sure how to write the if/else statemetn for matching two cards. I'm not sure how to call a matching statement that works for all card symbols.
