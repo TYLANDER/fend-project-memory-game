@@ -107,3 +107,90 @@ h1 {
     float: right;
     cursor: pointer;
 }
+
+.start-label {
+    position: absolute;
+    -webkit-transition: opacity 0.4s linear;
+    -o-transition: opacity 0.4s linear;
+    transition: opacity 0.4s linear;
+    top: 575px;
+    right: 54px;
+    opacity: 0;
+}
+
+.start-label.shown {
+    opacity: 1;
+}
+
+/*
+* Based on https://desandro.github.io/3dtransforms/docs/card-flip.html
+*/
+.card-container {
+    position: relative;
+    -webkit-perspective: 800px;
+    perspective: 800px;
+}
+
+.card-flip {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-transition: -webkit-transform 0.5s;
+    transition: -webkit-transform 0.5s;
+    -o-transition: transform 0.5s;
+    transition: transform 0.5s;
+    transition: transform 0.5s, -webkit-transform 0.5s;
+}
+
+.card-flip img,
+.card-flip div {
+    margin: 0;
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.card-flip .front {
+    background: #c2d5cb;
+    font-size: 45px;
+    text-align: center;
+    padding: 8px;
+    border: 4px solid white;
+}
+
+.card-flip .back {
+    background: #2e3d49;
+    -webkit-transform: rotateY( 180deg);
+    transform: rotateY( 180deg);
+}
+
+.card-flip.flipped {
+    cursor: default;
+    -webkit-transform: rotateY( 180deg);
+    transform: rotateY( 180deg);
+}
+
+.front,
+.back {
+    max-width: 95px;
+    min-height: 95px;
+    border-radius: 5px;
+}
+
+.escale {
+    -webkit-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+
+.escale:hover {
+    -webkit-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    transform: scale(1.1);
+    cursor: pointer;
+}
