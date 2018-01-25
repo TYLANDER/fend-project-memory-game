@@ -20,10 +20,7 @@ const $game = document.getElementById('game');
 const $start = document.getElementById('restart');
 const $deck = document.getElementById('deck');
 const $bubble = document.getElementById('message');
-const $bmoMessage = document.getElementById('bmo-message');
 const $moves = document.getElementById('moves');
-const $smile = document.getElementById('smile');
-const $winSmile = document.getElementById('win-smile');
 const $startLabel = document.getElementById('start-label');
 const $oneStar = document.getElementById('one-star');
 const $twoStar = document.getElementById('two-star');
@@ -45,7 +42,6 @@ let firstMoveMade = false;
 
 //Starting the game
  function initGame() {
-     setTimeout(function() {
          $start.addEventListener('click', function(evt) {
              if (isRestart) {
                  $openCards = [];
@@ -58,7 +54,7 @@ let firstMoveMade = false;
              updateTimer();
          });
          $startLabel.classList.add('shown');
-     }, 1000);
+       };
 
   // Add one event litener to deck element
   $deck.addEventListener('click', function(evt) {
