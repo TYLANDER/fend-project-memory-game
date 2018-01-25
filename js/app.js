@@ -1,10 +1,10 @@
-(function() {
+
 /*
  * Create a list that holds all of your cards
  */
 
  const cards = [
- 'bicycle',
+ 'fa-bicycle',
  'cube',
  'leaf',
  'anchor',
@@ -17,13 +17,10 @@
 //calling my card elements
 
 const $game = document.getElementById('game');
+const $card = document.getElementsByClassName('card');
 const $start = document.getElementById('restart');
 const $deck = document.getElementById('deck');
-const $bubble = document.getElementById('message');
-const $bmoMessage = document.getElementById('bmo-message');
 const $moves = document.getElementById('moves');
-const $smile = document.getElementById('smile');
-const $winSmile = document.getElementById('win-smile');
 const $startLabel = document.getElementById('start-label');
 const $oneStar = document.getElementById('one-star');
 const $twoStar = document.getElementById('two-star');
@@ -31,9 +28,8 @@ const $threeStar = document.getElementById('three-star');
 const $timer = document.getElementById('timer');
 const $stars = document.getElementById('stars');
 
-let $cards;
 
-let $openCards = [];
+const $openCards = [];
 let moves = 0;
 let matches = 0;
 let isRestart = true;
@@ -44,41 +40,17 @@ let timerEvent;
 let firstMoveMade = false;
 
 //Starting the game
- function initGame() {
-     setTimeout(function() {
-         $start.addEventListener('click', function(evt) {
-             if (isRestart) {
-                 $openCards = [];
-                 displayCards();
-                 isRestart = false;
-             }
-             firstMoveMade = false;
-             stopTimer();
-             resetTimer();
-             updateTimer();
-         });
-         $startLabel.classList.add('shown');
-     }, 1000);
+function initGame() {
+     $startLabel.classList.add('shown');
+     console.log('initGame working.');
+     };
 
-  // Add one event litener to deck element
-  $deck.addEventListener('click', function(evt) {
-      let $pickedCard;
-      if (evt.target.nodeName === 'I') $pickedCard = evt.target.parentNode.parentNode;
-      else if (evt.target.nodeName === 'DIV') {
-          $pickedCard = evt.target.parentNode;
-      }
-
-      if ($pickedCard && $openCards.length <= 1) {
-          if (!firstMoveMade) {
-              startTimer();
-              firstMoveMade = true;
-              isRestart = true;
-          }
-          flipCard($pickedCard);
-          addToOpenCards($pickedCard);
-      }
+  // Add one event listener to deck element
+  $deck.addEventListener("click", () => {
+    console.log("I flipped a card.");
+    flipCard();
   });
-}
+
 
 /*
  * Build the first deck when app is started
@@ -93,7 +65,7 @@ function prepareNewDeck() {
         $newElement.classList.add('card');
         $newElement.classList.add('card-container');
         //populating the sorted cards with images. do i need to get images?
-        $newElement.innerHTML = `<div class="card-flip" data-card="${card}">
+        $newElement.innerHTML = `<div class="card-flip">
                               <img class="back"><i class="fa fa-${card}"></i></div>
                               <div class="front escale"><i class="fa fa-question-circle-o"></i></div>
                             </div>`
@@ -129,7 +101,8 @@ function rebuildDeck() {
         setTimeout(setImageSource, 150, $card, randomCards[i]);
         ++i;
     }
-}
+};
+
 
 /*
  * Display the cards on the page
@@ -145,9 +118,10 @@ function displayCards() {
     }, 300);
 }
 
-// Flipping the card.
+// Flipping the card This is not working.
 function flipCard($element) {
-    $element.classList.add('flipped');
+    $element.classList.contains('shown open flipped avoidClick');
+    updateMoves();
 }
 
 //Add element to open card plus conditional logic for matching.
@@ -181,16 +155,10 @@ function checkCardMatch() {
  */
 function wonGame() {
     stopTimer();
-    setTimeout(function() {
-        //could add some fun win condition methods here.
+    let starHTML = `${$stars.innerHTML.replace(/<li>/g, '').replace(/<\/li>/g, '')}`;
+    displayMessage(`<p class="type-writer">You did it! <strong>${minutes}:${seconds < 10 ? '0' : ''}${seconds}</strong> secs ${starHTML}</p>`);
+    };
 
-        let starHTML = `${$stars.innerHTML.replace(/<li>/g, '').replace(/<\/li>/g, '')}`;
-        displayMessage(`<p class="type-writer">You did it! <strong>${minutes}:${seconds < 10 ? '0' : ''}${seconds}</strong> secs ${starHTML}</p>`);
-
-        setTimeout(function() { $bigSmile.classList.add('wider'); }, 600);
-
-    }, 600);
-}
 
 //functions to do things
 
@@ -289,7 +257,6 @@ function shuffle(array) {
 
     setTimeout(function() { initGame(); }, 500);
 
-})();
 /*
  * set up the event listener for a card. If a card is clicked:
  *  - display the card's symbol (put this functionality in another function that you call from this one)
