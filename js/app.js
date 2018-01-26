@@ -2,206 +2,34 @@
  * Create a list that holds all of your cards
  */
 
- const cards = [
- 'fa-bicycle',
- 'cube',
- 'leaf',
- 'anchor',
- 'paper-plane-o',
- 'bolt',
- 'bomb',
- 'diamond'
-];
+ const cardOrder = [
+ 'fa fa-diamond',
+ 'fa fa-paper-plane-o',
+ 'fa fa-btc',
+ 'fa fa-bolt',
+ 'fa fa-cube',
+ 'fa fa-anchor',
+ 'fa fa-leaf',
+ 'fa fa-bicycle',
+ 'fa fa-diamond',
+ 'fa fa-paper-plane-o',
+ 'fa fa-anchor',
+ 'fa fa-bolt',
+ 'fa fa-cube',
+ 'fa fa-btc',
+ 'fa fa-leaf',
+ 'fa fa-bicycle'
+  ];
 
 //calling my card elements
 
-const $game = document.getElementById('game');
-const $card = document.getElementsByClassName('card');
-const $start = document.getElementById('restart');
-const $deck = document.getElementById('deck');
-const $moves = document.getElementById('moves');
-const $startLabel = document.getElementById('start-label');
-const $oneStar = document.getElementById('one-star');
-const $twoStar = document.getElementById('two-star');
-const $threeStar = document.getElementById('three-star');
-const $timer = document.getElementById('timer');
-const $stars = document.getElementById('stars');
-
-
-const $openCards = [];
-let moves = 0;
-let matches = 0;
-let isRestart = true;
-let isFirstGame = true;
-let seconds = -1;
-let minutes = 0;
-let timerEvent;
-let firstMoveMade = false;
-
-//Starting the game
-function initGame() {
-     $startLabel.classList.add('shown');
-     console.log('initGame working.');
-     };
-
-  // Add one event listener to deck element
-  $deck.addEventListener("click", () => {
-    console.log("I flipped a card.");
-    flipCard();
-  });
-
-
-/*
- * Build the first deck when app is started
- */
-function prepareNewDeck() {
-    let randomCards = getRandomCards();
-
-    const $deckFragment = document.createDocumentFragment();
-
-    for (const card of randomCards) {
-        const $newElement = document.createElement('li');
-        $newElement.classList.add('card');
-        $newElement.classList.add('card-container');
-        //populating the sorted cards with images. do i need to get images?
-        $newElement.innerHTML = `<div class="card-flip">
-                              <img class="back"><i class="fa fa-${card}"></i></div>
-                              <div class="front escale"><i class="fa fa-question-circle-o"></i></div>
-                            </div>`
-
-        $deckFragment.appendChild($newElement);
-    }
-
-    $deck.style.display = 'none';
-
-    $deck.appendChild($deckFragment);
-    $deck.style.display = null;
-
-    // Cache the cards
-    $cards = document.getElementsByClassName('card-flip');
-}
-
-/*
- * Rebuild deck when game is re-started
- */
-function rebuildDeck() {
-    moves = -1;
-    matches = 0;
-    firstMoveMade = false;
-    resetStars();
-    updateMoves();
-
-    let $cards = document.getElementsByClassName('card-flip');
-    let randomCards = getRandomCards();
-    let i = 0;
-    for (const $card of $cards) {
-        if ($card.classList.contains('flipped')) $card.classList.remove('flipped');
-        $card.dataset.card = randomCards[i];
-        setTimeout(setImageSource, 150, $card, randomCards[i]);
-        ++i;
-    }
-};
-
-
-/*
- * Display the cards on the page
- */
-function displayCards() {
-    setTimeout(function() {
-        if (isFirstGame) {
-            prepareNewDeck();
-            isFirstGame = false;
-            $game.classList.add('shown');
-        } else rebuildDeck();
-        displayMessage('<p class="type-writer">Starting new game.</p>', true, true);
-    }, 300);
-}
-
-// Flipping the card This is not working.
-function flipCard($element) {
-    $element.classList.contains('shown open flipped avoidClick');
-    updateMoves();
-}
-
-//Add element to open card plus conditional logic for matching.
-function addToOpenCards($element) {
-    $openCards.push($element);
-    if ($openCards.length > 1) checkCardMatch();
-}
-
-//checking to see if the cards match.
-function checkCardMatch() {
-    if ($openCards[0].dataset.card !== $openCards[1].dataset.card) {
-        setTimeout(function() {
-            unflipCards();
-            setTimeout(function() { $openCards = []; }, 400);
-        }, 700);
-    } else {
-        setTimeout(function() {
-            $openCards = [];
-            ++matches;
-            if (matches == 8) {
-                wonGame();
-            }
-        }, 400);
-    }
-
-    updateMoves();
-}
-
-/*
- * Display winning message
- */
-function wonGame() {
-    stopTimer();
-    let starHTML = `${$stars.innerHTML.replace(/<li>/g, '').replace(/<\/li>/g, '')}`;
-    displayMessage(`<p class="type-writer">You did it! <strong>${minutes}:${seconds < 10 ? '0' : ''}${seconds}</strong> secs ${starHTML}</p>`);
-    };
-
-
-//functions to do things
-
-//hide cards after click if no match
-function unflipCards() {
-  $openCards[0].classList.remove('flipped');
-  $openCards[1].classList.remove('flipped');
-}
-
-//count the number of moves and apply to star rating
-
-function updateMoves() {
-  ++moves;
-  $moves.innerText = moves;
-  checkStars();
-}
-
-function checkStars() {
-  if (moves >= 12) {
-    $threeStar.classList.add('fa-star-o');
-  }
-  if (moves >= 18) {
-      $twoStar.classList.add('fa-star-o');
-  }
-}
-
-/*
- * Reset the star display
- */
-function resetStars() {
-    $threeStar.classList.remove('fa-star-o');
-    $twoStar.classList.remove('fa-star-o');
-}
-
-
-
-/*
-* Create array with the card order
-*/
-function getRandomCards() {
-   let shuffledCards = shuffle(cards).slice(0, 8);
-   return shuffle([...shuffledCards, ...shuffledCards]);
-}
-
+let openCards = [],
+move = 0,
+matchedCards = 0,
+restartTracker = 0,
+time,
+duration,
+gameTime = 0;
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -215,46 +43,267 @@ function shuffle(array) {
         array[randomIndex] = temporaryValue;
     }
 
+    $('.card').each(function(index) {
+       $(this).append('<i class= "'+ array[index] + '"></i>');
+    });
+
     return array;
+};
+
+/*
+ * Reads the move variable value and displays number of user moves
+ *   - Each time a user reaches 10 moves, they lose a rating (display star removed)
+ */
+function trackScore() {
+  if (move === 1) {
+    $('.moves').html(move+" Move");
+
+  } else {
+    $('.moves').html(move+" Moves");
+  }
+
+  if (move === 12 || move === 20) {
+    $('.stars').children(':first').addClass('animated pulse');
+
+    setTimeout(function() {
+      $('.stars').children(':first').remove();
+      }, 1000);
+  }
 }
 
 /*
-     * Update timer in the screen
-     */
-    function updateTimer() {
-        ++seconds;
-        if (seconds == 60) {
-            ++minutes;
-            seconds = 0;
-        }
+ * If there is a match, set the 'card' class to .match
+ *   - Remove .clicked
+ *   - Once all cards are matched (matchedCards = 16), produce the modal
+ *   - Empty array on clicked cards
+ *   - Update score (moves + rating)
+ *   - Adds Modal for win condition
+ *   - Animation courtesy of aninimate.css: https://daneden.github.io/animate.css/
+ */
 
-        $timer.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+function match(array, item) {
+  $("."+item).parent().addClass('match bounce').removeClass('clicked');
+
+  setTimeout(function() {
+      $('.'+value).parent().css({'transition': '', 'transform': ''});
+      }, 1600);
+
+  array.splice(0, 2);
+
+  matchedCards = matchedCards + 2;
+
+  if (matchedCards === 16) {
+    addModal();
+  }
+
+  trackScore();
+}
+
+/*
+ * Logic If the cards don't match, set background color (via .clicked class)
+ *   - Remove transition, transform and bg-color on specific intervals
+ *   - Empty array of clicked cards
+ *   - Update score (moves + rating)
+ */
+function noMatch(array, item) {
+  $.each(array, function(index, value) {
+    setTimeout(function() {
+      $('.clicked').css({'background-color': 'red'})
+      .addClass('animated swing');
+      }, 600);
+
+    setTimeout(function() {
+      $('.'+value).parent().removeClass('open show animated rotateIn swing')
+      .css({'background-color': ''});
+      array.splice(0, 2);
+      }, 1100);
+
+    setTimeout(function() {
+      $('.'+value).parent().css({'transition': '', 'transform': ''})
+      .removeClass('clicked');
+      }, 1600);
+  });
+
+  trackScore();
+}
+
+/*
+ * Logic: When two .cards are clicked on, check to see if there is a match or not
+ *   - Remove transition, transform and bg-color on specific intervals
+ *   - Empty array of clicked cards
+ */
+function matchChecker(array, item) {
+  array.push(item);
+
+  if (array.length === 2) {
+    move++;
+
+    if (array[0] === item) {
+      match(array, item);
+
+    } else {
+      noMatch(array, item);
+    }
+  }
+}
+
+  /*
+   * Restart game
+   *   - Removes li items of .deck
+   *   - Shuffles and rebuilds deck .li
+   *   - Reset move, matchedCards, openCards and time counters
+   */
+  function restart() {
+
+    matchedCards = 0;
+
+    $('.card').empty()
+    .removeClass('open show clicked match animated bounce');
+
+    shuffle(cardOrder);
+
+    $('.moves').html("");
+
+    if (move >= 20) {
+      $('.stars').append('<li><i class="fa fa-star"></i></li>');
+      $('.stars').append('<li><i class="fa fa-star"></i></li>');
+
+    } else if (move >= 12) {
+      $('.stars').append('<li><i class="fa fa-star"></i></li>');
+
     }
 
-    /*
-     * Reset the timer
-     */
-    function resetTimer() {
-        seconds = -1;
-        minutes = 0;
+    move = 0;
+    restartTracker = 1;
+    time = new Date();
+    openCards.splice(0, 2);
+  }
+
+  /*
+   * Produce the modal overlay that displays final score, time and play again button
+   *   - Add HTML for modal overlay
+   *   - Display time and rating
+  Sweet Alert from https://sweetalert.js.org/guides/#getting-started/
+  */
+  function addModal() {
+    let modalDuration = duration;
+
+    $('.time-counter').css({'display': 'none'});
+
+    swal({
+      title: 'Nice Work!',
+      text: 'You matched all of the cards.',
+      content: '.overlay-text-rating',
+      icon: 'success',
+      button: 'Play Again',
+    });
+
+    $('.swal-text').append('<h1 class= "overlay-text time">Completion Time: '+ modalDuration + ' Seconds</h1>');
+    $('.swal-text').append('<h1 class= "overlay-text rating">Your Rating:  </h1>');
+
+    $('.fa-star').each(function() {
+      $('.rating').append('<span><i class="fa fa-star"></i></span>');
+    });
+
+    $('.swal-button').addClass('reset-button');
+
+    $('.reset-button').click(function(){
+      restart();
+    });
+  }
+
+  /*
+   * Event .card click
+   *   - Add classes .open, .show, .clicked
+   *   - Add rotate transformation with transition
+   */
+  const cardFlip = function(target) {
+    $(target).addClass('open show clicked animated rotateIn')
+    .css({'transition': '200ms linear all'});
+  };
+
+  /*
+ * Create a new date and round up to be used in time display
+ * Wrie time HTML
+ */
+function startTimer() {
+  setInterval(function() {
+    gameTime = Math.ceil((new Date() - time) / 1000);
+    $('.time-counter').html("Your Time: " + gameTime);
+    }, 1000);
+}
+
+/*
+ * When the document is ready, call the following:
+ *   - Shuffle function for randomizing card order
+ *   - On the first click within .deck, start the time counter
+ *   - event listener for .cards:
+ *      - Only occurs if the card isn't already in the openCards array and only when the array is < 2
+ *      - Check for a match or not
+ *      - Check the interval between time start and current time, rounded to whole number
+ *   - Event listeners for restart icon (body) and play again button (modal)
+ */
+$(document).ready(function() {
+
+  shuffle(cardOrder);
+
+  startTimer();
+
+  setTimeout(function() {
+    $('.score-panel').removeClass('animated bounce');
+    }, 2000);
+
+  $('.deck').one('click', function() {
+    time = new Date();
+    setTimeout(function() {
+      $('.time-counter').removeClass('hide');
+    }, 1000);
+  });
+
+  $('.card').click(function() {
+    if (restartTracker === 1) {
+      time = new Date;
+
+      setTimeout(function() {
+        $('.time-counter').removeClass('hide');
+        }, 1000);
+
+      restartTracker = 0;
     }
 
-    /*
-     * Stop the timer
-     */
-    function stopTimer() {
-        if (timerEvent) clearInterval(timerEvent);
+    if ($(this).hasClass('clicked') === false && $(this).hasClass('match') === false && openCards.length < 2) {
+      $('.this').on('click', cardFlip(this));
+
+      let classClicked = $(this).children(':first').attr('class').slice(3);
+
+      matchChecker(openCards, classClicked);
+
+    } else {
+      return false;
     }
 
-    /*
-     * Start the timer
-     */
-    function startTimer() {
-        stopTimer();
-        timerEvent = setInterval(function() { updateTimer() }, 1000);
-    }
+    setInterval(function() {
+      duration = Math.ceil((new Date() - time) / 1000);
+      }, 1000);
+  });
 
-    setTimeout(function() { initGame(); }, 500);
+  $('.restart').click(function() {
+    $('.time-counter').addClass('hide');
+    $('.moves').css({'display': 'none'});
+
+    swal({
+      title: "Game Reset",
+      icon: "warning",
+    });
+
+    $('.swal-button').click(function() {
+      restart();
+
+    $('.moves').css({'display': ''});
+  });
+ });
+});
+
 
 /*
  * set up the event listener for a card. If a card is clicked:
