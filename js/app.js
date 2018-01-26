@@ -1,8 +1,8 @@
 /*
- * Create a list that holds all of your cards
+ * I created a list of all the cards.
  */
 
- const cardOrder = [
+ const cardList = [
  'fa fa-diamond',
  'fa fa-paper-plane-o',
  'fa fa-btc',
@@ -21,9 +21,9 @@
  'fa fa-bicycle'
   ];
 
-//calling my card elements
+//declaring my game variables with the new 'let' syntax from the lessons.
 
-let openCards = [],
+let shownCards = [],
 move = 0,
 matchedCards = 0,
 restartTracker = 0,
@@ -51,7 +51,7 @@ function shuffle(array) {
 };
 
 /*
- * Reads the move variable value and displays number of user moves
+ * Reads the move variable value and displays number of moves
  *   - Each time a user reaches 10 moves, they lose a rating (display star removed)
  */
 function trackScore() {
@@ -151,7 +151,7 @@ function matchChecker(array, item) {
    * Restart game
    *   - Removes li items of .deck
    *   - Shuffles and rebuilds deck .li
-   *   - Reset move, matchedCards, openCards and time counters
+   *   - Reset move, matchedCards, shownCards and time counters
    */
   function restart() {
 
@@ -160,7 +160,7 @@ function matchChecker(array, item) {
     $('.card').empty()
     .removeClass('open show clicked match animated bounce');
 
-    shuffle(cardOrder);
+    shuffle(cardList);
 
     $('.moves').html("");
 
@@ -176,14 +176,13 @@ function matchChecker(array, item) {
     move = 0;
     restartTracker = 1;
     time = new Date();
-    openCards.splice(0, 2);
+    shownCards.splice(0, 2);
   }
 
   /*
-   * Produce the modal overlay that displays final score, time and play again button
-   *   - Add HTML for modal overlay
-   *   - Display time and rating
-  Sweet Alert from https://sweetalert.js.org/guides/#getting-started/
+   * Produce the modal overlay that displays: final score, time and play again button
+   *   - append HTML for modal overlay
+      - use swal: Sweet Alert from https://sweetalert.js.org/guides/#getting-started/
   */
   function addModal() {
     let modalDuration = duration;
@@ -213,13 +212,13 @@ function matchChecker(array, item) {
   }
 
   /*
-   * Event .card click
+   * Flip .card click events
    *   - Add classes .open, .show, .clicked
-   *   - Add rotate transformation with transition
+   *   - Add rotateIn transformation with 100ms transition
    */
   const cardFlip = function(target) {
     $(target).addClass('open show clicked animated rotateIn')
-    .css({'transition': '200ms linear all'});
+    .css({'transition': '100ms linear all'});
   };
 
   /*
@@ -234,18 +233,18 @@ function startTimer() {
 }
 
 /*
- * When the document is ready, call the following:
+ * Initialize function when document is ready:
  *   - Shuffle function for randomizing card order
  *   - On the first click within .deck, start the time counter
  *   - event listener for .cards:
- *      - Only occurs if the card isn't already in the openCards array and only when the array is < 2
- *      - Check for a match or not
- *      - Check the interval between time start and current time, rounded to whole number
- *   - Event listeners for restart icon (body) and play again button (modal)
+ *      - Only occurs if the card isn't already in the shownCards array and only when the array is < 2
+ *      - Matching Logic
+ *      -Time check interval: start and current time, rounded to whole number
+ *   - Event listeners for restart and play again modal
  */
 $(document).ready(function() {
 
-  shuffle(cardOrder);
+  shuffle(cardList);
 
   startTimer();
 
@@ -271,12 +270,12 @@ $(document).ready(function() {
       restartTracker = 0;
     }
 
-    if ($(this).hasClass('clicked') === false && $(this).hasClass('match') === false && openCards.length < 2) {
+    if ($(this).hasClass('clicked') === false && $(this).hasClass('match') === false && shownCards.length < 2) {
       $('.this').on('click', cardFlip(this));
 
       let classClicked = $(this).children(':first').attr('class').slice(3);
 
-      matchChecker(openCards, classClicked);
+      matchChecker(shownCards, classClicked);
 
     } else {
       return false;
@@ -304,7 +303,7 @@ $(document).ready(function() {
  });
 });
 
-
+//notes from the design spec
 /*
  * set up the event listener for a card. If a card is clicked:
  *  - display the card's symbol (put this functionality in another function that you call from this one)
@@ -315,6 +314,3 @@ $(document).ready(function() {
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
-
-
-//TS: I'm not sure how to write the if/else statemetn for matching two cards. I'm not sure how to call a matching statement that works for all card symbols.
