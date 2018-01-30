@@ -31,6 +31,7 @@ time,
 duration,
 gameTime = 0;
 
+
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
@@ -48,7 +49,7 @@ function shuffle(array) {
     });
 
     return array;
-};
+}
 
 /*
  * Reads the move variable value and displays number of moves
@@ -157,6 +158,8 @@ function matchChecker(array, item) {
 
     matchedCards = 0;
 
+    $(document).ready();
+
     $('.card').empty()
     .removeClass('open show clicked match animated bounce');
 
@@ -175,8 +178,9 @@ function matchChecker(array, item) {
 
     move = 0;
     restartTracker = 1;
-    time = new Date();
     shownCards.splice(0, 2);
+
+    startTimer();
   }
 
   /*
@@ -185,9 +189,9 @@ function matchChecker(array, item) {
       - use swal: Sweet Alert from https://sweetalert.js.org/guides/#getting-started/
   */
   function addModal() {
+
     let modalDuration = duration;
 
-    $('.time-counter').css({'display': 'none'});
 
     swal({
       title: 'Nice Work!',
@@ -208,7 +212,10 @@ function matchChecker(array, item) {
 
     $('.reset-button').click(function(){
       restart();
+      startTimer();
+
     });
+
   }
 
   /*
@@ -226,11 +233,17 @@ function matchChecker(array, item) {
  * Wrie time HTML
  */
 function startTimer() {
-  setInterval(function() {
+  time = new Date();
+  var gameInterval = setInterval(function() {
     gameTime = Math.ceil((new Date() - time) / 1000);
-    $('.time-counter').html("Your Time: " + gameTime);
-    }, 1000);
+  $('.time-counter').html("Your Time: " + gameTime);
+  } , 1000);
 }
+
+function stopTimer() {
+  clearInterval(gameInterval);
+}
+
 
 /*
  * Initialize function when document is ready:
@@ -242,30 +255,25 @@ function startTimer() {
  *      -Time check interval: start and current time, rounded to whole number
  *   - Event listeners for restart and play again modal
  */
+
 $(document).ready(function() {
 
   shuffle(cardList);
 
-  startTimer();
 
   setTimeout(function() {
     $('.score-panel').removeClass('animated bounce');
     }, 2000);
 
+
   $('.deck').one('click', function() {
     time = new Date();
-    setTimeout(function() {
-      $('.time-counter').removeClass('hide');
-    }, 1000);
+    startTimer();
   });
 
   $('.card').click(function() {
     if (restartTracker === 1) {
-      time = new Date;
 
-      setTimeout(function() {
-        $('.time-counter').removeClass('hide');
-        }, 1000);
 
       restartTracker = 0;
     }
@@ -284,10 +292,13 @@ $(document).ready(function() {
     setInterval(function() {
       duration = Math.ceil((new Date() - time) / 1000);
       }, 1000);
+
   });
 
   $('.restart').click(function() {
-    $('.time-counter').addClass('hide');
+
+    time = new Date();
+
     $('.moves').css({'display': 'none'});
 
     swal({
